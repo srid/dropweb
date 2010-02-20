@@ -15,24 +15,33 @@
 # limitations under the License.
 #
 
+from os import path
 from markdown import markdown
 
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from google.appengine.api.urlfetch import fetch
+from google.appengine.ext.webapp import template
+
+
+md_url = 'http://dl.dropbox.com/u/87045/diary.txt'
 
 
 def to_html(rest):
     """Convert reST formatted body to HTML with <h2> as starting heading"""
-    return markdown(rest, extensions=['HeaderId', 'footnotes'])
+    return markdown(rest, extensions=['headerid(forceid=True)',
+                                      'footnotes',
+                                      'meta'])
         
         
 class MainHandler(webapp.RequestHandler):
 
   def get(self):
     self.response.out.write(
-      to_html(
-        fetch('http://dl.dropbox.com/u/87045/diary.txt').content))
+      template.render(path.join(path.dirname(__file__), 'index.html'), dict(
+        md_url = md_url,
+        content = to_html(fetch(md_url).content)
+      )))
 
 
 def main():
