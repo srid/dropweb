@@ -1,12 +1,20 @@
 <html>
-<head><title>Sridhar's diary</title>
+<head><title>Sridhar's diary: {{meta.title.0}}</title>
 <style type="text/css">
 body {
     font-family: Verdana;
     font-size: 90%;
 }
+p {
+    line-height: 125%;
+}
 h1 {
     text-align: center;
+}
+pre {
+    background-color: #efefef;
+    padding: 1em;
+    border: 1px dotted;
 }
 div#msg {
     text-align: center;
@@ -16,11 +24,44 @@ div#msg {
     margin: 0px auto;
     width: 600px;
 }
+div.meta {
+    color: #999999;
+    font-size: 80%;
+    float: right;
+    background-color: #eeeeee;
+    margin: auto auto 1em 1em;
+    padding: .25em;
+}
+div.meta div.item {
+    padding: 0.25em;
+}
+div.footnote {
+    font-size: 80%;
+}
+div#footer {
+    font-size: 75%;
+    color: #888888;
+    text-align: center;
+}
+div#footer a, div#footer a:visited {
+    color: #444444;
+}
 </style>
 </head>
 
 <body>
-    <div id="msg">Automatically generated from a  <a href="{{md_url}}"
-    >Markdown-formatted file</a> hosted in Dropbox!</div>
+    <h1>{{meta.title.0}}</h1>
+    
+    <div class="meta">
+        <div class="item"><b>Tags</b>: {{ meta.tags.0 }}</div>
+        <div class="item"><b>Date published</b>: {{ meta.date_published.0 }}</div>
+        <div class="item"><b>Access</b>: {{ meta.access.0 }}</div>
+    </div> 
+    
     {{ content }}
+    
+    <div id="footer">
+        This page was automatically generated from a Markdown formatted file
+        stored in Dropbox (<a href="/about#dropweb">learn more</a>).
+    </div>  
 </body>
