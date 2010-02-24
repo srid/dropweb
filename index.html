@@ -52,16 +52,21 @@ div#footer a, div#footer a:visited {
 <body>
     <h1>{{meta.title.0}}</h1>
     
+    {% if meta %}
     <div class="meta">
         <div class="item"><b>Tags</b>: {{ meta.tags.0 }}</div>
         <div class="item"><b>Date published</b>: {{ meta.date_published.0 }}</div>
         <div class="item"><b>Access</b>: {{ meta.access.0 }}</div>
-    </div> 
+    </div>
+    {% endif %}
     
     {{ content }}
     
     <div id="footer">
+        {% if meta %}
         This page was automatically generated from a Markdown formatted file
         stored in Dropbox (<a href="/about#dropweb">learn more</a>).
+        {% endif %}
+        <a href="{{ authlink.1 }}">{{ authlink.0 }} </a>
     </div>  
 </body>

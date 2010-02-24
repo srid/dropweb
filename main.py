@@ -22,10 +22,11 @@ import markdown
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from google.appengine.api.urlfetch import fetch
+from google.appengine.api import users
 from google.appengine.ext.webapp import template
 
 
-md_url = 'http://dl.dropbox.com/u/87045/diary/pycon2010.txt'
+md_url = 'http://dl.dropbox.com/u/87045/diary/%s.txt'
 
 def create_md():
     return markdown.Markdown(extensions = [
@@ -33,22 +34,76 @@ def create_md():
       'footnotes',
       'meta'])
 
-        
-class MainHandler(webapp.RequestHandler):
 
-  def get(self):
-    md = create_md()
-    self.response.out.write(
-      template.render(path.join(path.dirname(__file__), 'index.html'), dict(
-        md_url = md_url,
-        content = md.convert(fetch(md_url).content),
-        meta = md.Meta,
-      )))
+class DropwebRequestHandler(webapp.RequestHandler):
+  
+    def admin_only(self):
+        user = users.get_current_user()
+        is_admin = users.is_current_user_admin()
+        if not user:
+            self.redirect(users.create_login_url(self.request.uri))
+        elif not is_admin:
+            self.error(403)
+            self.render_template('index.html', dict(
+              content='sorry, not authorized', meta=None))
+        else:
+            return True
+
+    def render_template(self, tmplname, tmplargs):
+        tmplargs['user'] = user = users.get_current_user()
+        if user:
+            tmplargs['authlink'] = (
+                'logout %s' % user.nickname(),
+                users.create_logout_url(self.request.uri))
+        else:
+            tmplargs['authlink'] = (
+                'login',
+                users.create_login_url(self.request.uri))
+            
+        self.response.out.write(
+            template.render(path.join(path.dirname(__file__), tmplname), tmplargs)
+        )
+    
+
+class MainHandler(DropwebRequestHandler):
+  
+    def get(self):
+        self.render_template('index.html', dict(
+            content = 'Under construction',
+            meta = None
+        ))
+
+
+class PageHandler(DropwebRequestHandler):
+  
+    def get(self, name):
+        md = create_md()
+        url = md_url % name
+        urlresp = fetch(url)
+        if urlresp.status_code == 200:
+            content = md.convert(fetch(url).content)
+            meta = md.Meta
+            error = False
+            
+            if 'access' not in meta or meta['access'][0].lower() != 'public':
+                if not self.admin_only():
+                    return
+        else:
+            content = 'non-OK status: %s' % urlresp.status_code
+            meta = None
+            error = True
+            
+        self.render_template(
+            'index.html', dict(content=content, meta=meta))
+        
+        if error: self.error(urlresp.status_code)
 
 
 def main():
-  application = webapp.WSGIApplication([('/', MainHandler)],
-                                       debug=True)
+  application = webapp.WSGIApplication([
+    ('/(.+)', PageHandler),
+    ('/', MainHandler),
+  ], debug=True)
   util.run_wsgi_app(application)
 
 
