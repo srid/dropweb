@@ -45,7 +45,8 @@ class DropwebRequestHandler(webapp.RequestHandler):
         elif not is_admin:
             self.error(403)
             self.render_template('index.html', dict(
-              content='sorry, not authorized', meta=None))
+              content='sorry, only the website owner can access this page',
+              meta=None))
         else:
             return True
 
@@ -69,7 +70,7 @@ class MainHandler(DropwebRequestHandler):
   
     def get(self):
         self.render_template('index.html', dict(
-            content = 'Under construction',
+            content = '<p><a href="http://bitbucket.org/srid/dropweb">TODO</a></p>',
             meta = None
         ))
 
