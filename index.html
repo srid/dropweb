@@ -56,7 +56,9 @@ div#footer a, div#footer a:visited {
     <div class="meta">
         <div class="item"><b>Tags</b>: {{ meta.tags.0 }}</div>
         <div class="item"><b>Date published</b>: {{ meta.datepublished.0 }}</div>
-        <div class="item"><b>Access</b>: {{ meta.access.0 }}</div>
+        {% if meta.private %}
+        <div class="item"><b>Private</b>: True</div>
+        {% endif %}
     </div>
     {% endif %}
     
