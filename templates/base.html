@@ -1,5 +1,5 @@
 <html>
-<head><title>Sridhar's diary: {{meta.title.0}}</title>
+<head><title>{% block title %}{% endblock %}</title>
 <style type="text/css">
 body {
     font-family: Verdana;
@@ -50,25 +50,10 @@ div#footer a, div#footer a:visited {
 </head>
 
 <body>
-    <h1>{{meta.title.0}}</h1>
-    
-    {% if meta %}
-    <div class="meta">
-        <div class="item"><b>Tags</b>: {{ meta.tags.0 }}</div>
-        <div class="item"><b>Date published</b>: {{ meta.datepublished.0 }}</div>
-        {% if meta.private %}
-        <div class="item"><b>Private</b>: True</div>
-        {% endif %}
-    </div>
-    {% endif %}
-    
-    {{ content }}
+    {% block content %}{% endblock %}
     
     <div id="footer">
-        {% if meta %}
-        This page was automatically generated from a Markdown formatted file
-        stored in Dropbox (<a href="/about#dropweb">learn more</a>).
-        {% endif %}
+        {% block footer %}{% endblock %}
         <a href="{{ authlink.1 }}">{{ authlink.0 }} </a>
     </div>  
 </body>

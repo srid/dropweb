@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %} {{page.title}} {% endblock %}
+
+{% block content %}
+    <h1>{{ page.title }}</h1>
+    
+    <div class="meta">
+        <div class="item"><b>Tags</b>:
+          {% for tag in page.tags %}
+              {{ tag }}
+          {% endfor %}
+        </div>
+        <div class="item"><b>Date published</b>: {{ page.date_published }}</div>
+        {% if page.is_private %}
+        <div class="item"><b>Private</b>: True</div>
+        {% endif %}
+    </div>
+    
+    {{ page.html }}
+    
+{% endblock %}
+    
+    {% block footer %}
+    This page was automatically generated from a Markdown formatted file
+    stored in Dropbox (<a href="/#dropweb">learn more</a>).
+    {% endblock %}

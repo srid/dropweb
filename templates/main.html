@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %} Sridhar's diary {% endblock %}
+
+{% block content %}
+    <h1>Sridhar's diary</h1>
+    
+    <p>This is the site where I publish a bunch of my writings (which
+    anyone can access) among the private diary entries (which only I have access
+    to). Here's the list of available pages:
+    
+    <ul>
+    {% for page in pages %}
+        <li><a href="/{{page.name}}">{{page.title}}</a>
+            (<i>published on {{page.date_published}}</i>)
+        </li>
+    {% endfor %}
+    </ul>
+    
+    </p>
+    
+    <h2 id="dropweb">Dropweb</h2>
+    
+    <p>Articles are stored in my Dropbox Public directory, but served from
+    App Engine. See the <a href="http://bitbucket.org/srid/dropweb">project
+    page</a>; I will expand on this later.</p>
+    
+{% endblock %}

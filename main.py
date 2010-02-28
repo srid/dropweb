@@ -15,9 +15,8 @@
 # limitations under the License.
 #
 
-from __future__ import with_statement
-
 from os import path
+from datetime import datetime
 
 import markdown
 
@@ -46,17 +45,21 @@ class MyDropboxAccount(db.Model):
 
 class DropboxPublicPage(db.Model):
     
-    # public dropbox url
-    url = db.StringProperty(required=True)
+    name = db.StringProperty(required=True)
     
     # actual content of the file
     data = db.BlobProperty()     
-    
     # decrypted content of the file (vim -x)
-    text = db.TextProperty()         
-    
+    text = db.TextProperty()
+    # html version of text
+    html = db.TextProperty()
     # dropbox etag for this url
     etag = db.StringProperty()
+    
+    # Meta information from Markdown
+    title = db.StringProperty()
+    tags = db.StringListProperty()
+    date_published = db.DateProperty()
     
     @staticmethod
     def get_page(name):
@@ -69,9 +72,9 @@ class DropboxPublicPage(db.Model):
         acct = MyDropboxAccount.get()
         url = acct.diary_url % name
         
-        results = list(DropboxPublicPage.all().filter('url =', url))
+        results = list(DropboxPublicPage.all().filter('name =', name))
         if not results:
-            page = DropboxPublicPage(url=url)
+            page = DropboxPublicPage(name=name)
         elif len(results) == 1:
             page = results[0]
         else:
@@ -85,7 +88,7 @@ class DropboxPublicPage(db.Model):
             page.put()
         
         return page
-    
+      
     def _set_content(self, data, acct):
         """Set page content (raw)"""
         # decrypt vim encrypted file
@@ -96,6 +99,17 @@ class DropboxPublicPage(db.Model):
             
         self.data = data
         self.text = text
+        
+        md = create_md()
+        self.html = md.convert(self.text)
+        
+        # update Meta
+        meta = md.Meta
+        self.title = meta['title'][0]
+        self.tags = meta['tags'][0].replace(',', ' ').split()
+        self.date_published = datetime.strptime(
+          meta['datepublished'][0],
+          '%b %d, %Y').date()
         
     def is_private(self):
         return self.text != self.data # vim encrypted?
@@ -140,9 +154,8 @@ class DropwebRequestHandler(webapp.RequestHandler):
             self.redirect(users.create_login_url(self.request.uri))
         elif not is_admin:
             self.error(403)
-            self.render_template('index.html', dict(
-              content='sorry, only the website owner can access this page',
-              meta=None))
+            self.render_template('error.html', dict(
+              msg='sorry, only the website owner can access this page'))
         else:
             return True
 
@@ -158,7 +171,9 @@ class DropwebRequestHandler(webapp.RequestHandler):
                 users.create_login_url(self.request.uri))
             
         self.response.out.write(
-            template.render(path.join(path.dirname(__file__), tmplname), tmplargs)
+            template.render(
+              path.join(path.dirname(__file__), 'templates', tmplname),
+              tmplargs)
         )
         
         
@@ -171,19 +186,15 @@ class DropboxAccountHandler(DropwebRequestHandler):
         key = self.request.get('encryption_key')
         acct = MyDropboxAccount(diary_url=url, encryption_key=key)
         acct.put()
-        self.render_template('index.html', dict(
-          content = '<p>Set dropbox account details successfully</p>',
-          meta = None
-        ))
+        self.render_template('error.html', dict(
+          msg = 'Set dropbox account details successfully'))
     
 
 class MainHandler(DropwebRequestHandler):
   
     def get(self):
-        self.render_template('index.html', dict(
-            content = '<p><a href="http://bitbucket.org/srid/dropweb">TODO</a></p>',
-            meta = None
-        ))
+        pages = [p for p in DropboxPublicPage.all() if not p.is_private()]
+        self.render_template('main.html', dict(pages=pages))
 
 
 class PageHandler(DropwebRequestHandler):
@@ -193,17 +204,14 @@ class PageHandler(DropwebRequestHandler):
             page = DropboxPublicPage.get_page(name)
         except FetchError, e:
             html = 'non-200 status: %s' % e.response.status_code
-            self.render_template('index.html', dict(
-              content='non-200 status: %s' % e.response.status_code,
-              meta=None))
+            self.render_template('error.html', dict(
+              msg='non-200 status: %s' % e.response.status_code))
             self.error(e.response.status_code)
         else:
-            html, meta = page.md_convert()
-            meta['private'] = page.is_private()
-            if meta['private']:
+            if page.is_private():
                 if not self.admin_only():
                     return
-            self.render_template('index.html', dict(content=html, meta=meta))
+            self.render_template('page.html', dict(page=page))
      
 
 # copied from Python2.6's zipfile.py   
