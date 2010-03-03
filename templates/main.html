@@ -7,7 +7,7 @@
     
     <p>This is the site where I publish a bunch of my writings (which
     anyone can access) among the private diary entries (which only I have access
-    to). Here's the list of available pages:</p>
+    to). Here's the list of articles that are publicly available:</p>
     
     <ul>
     {% for page in pages %}
@@ -17,14 +17,25 @@
     {% endfor %}
     </ul>
     
-    <p>For general (non-tech) articles I share on the internet, see
-    <a href="http://www.google.com/reader/shared/04241088551180937596">here</a>.
+    <p>
+    For my general micro-updates, see my 
+    <a href="http://www.google.com/profiles/107514687808578919461#buzz">Google
+    Buzz</a> posts.
     </p>
     
-    <h2 id="dropweb">Dropweb</h2>
+    <p>
+    For my professional portfolio, you can visit my <a href="http://twitter.com/sridhr"
+    >Twitter</a> and <a href="http://ca.linkedin.com/in/sridr">LinkedIn</a> profile.
     
-    <p>Articles are stored in my Dropbox Public directory, but served from
-    App Engine. See the <a href="http://bitbucket.org/srid/dropweb">project
-    page</a>; I will expand on this later.</p>
+    <h2 id="dropweb">About this site</h2>
+    
+    <p>
+    This site is hosted on App Engine -- the diary entries are actually
+    stored in my <a href="http://www.dropbox.com/">Dropbox</a> account; so all
+    I have to do to edit/post articles is edit the local files on my
+    computer!
+    You can access the <a href="http://bitbucket.org/srid/dropweb">project
+    page</a> at bitbucket.
+    </p>
     
 {% endblock %}

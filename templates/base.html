@@ -2,8 +2,10 @@
 <head><title>{% block title %}{% endblock %}</title>
 <style type="text/css">
 body {
-    font-family: Verdana;
-    font-size: 90%;
+    font-family: Georgia, Times, 'Times New Roman', serif;
+    font-size: 95%;
+    background-color: #fcfcfc;
+    margin: 1em 5%;
 }
 p {
     line-height: 125%;
@@ -63,6 +65,10 @@ div.delicious-posts h2 a {
     
     <div id="footer">
         {% block footer %}{% endblock %}
-        <a href="{{ authlink.1 }}">{{ authlink.0 }} </a>
+        <a href="{{ authlink.1 }}">{{ authlink.0 }} </a> |
+        
+        <!-- CC license -->
+        <a rel="license" href="http://creativecommons.org/licenses/by-sa/2.5/ca/">licensed under CC BY-SA</a>
+        
     </div>  
 </body>
