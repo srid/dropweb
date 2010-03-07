@@ -90,9 +90,13 @@ class DropboxPublicPage(db.Model):
         meta = md.Meta
         self.title = meta['title'][0]
         self.tags = meta['tags'][0].replace(',', ' ').split()
-        self.date_published = datetime.strptime(
-          meta['datepublished'][0],
-          '%b %d, %Y').date()
+        if 'datepublished' in meta:
+            self.date_published = datetime.strptime(
+                meta['datepublished'][0],
+               '%b %d, %Y').date()
+        else:
+            # wiki page, not a 'published' diary entry
+            self.date_published = None
         
     def is_private(self):
         return self.text != self.data # vim encrypted?
@@ -177,6 +181,8 @@ class MainHandler(DropwebRequestHandler):
   
     def get(self):
         pages = [p for p in DropboxPublicPage.all() if not p.is_private()]
+        # sort by title, as not all pages have published_date
+        pages.sort(key=lambda page: page.title) 
         self.render_template('main.html', dict(pages=pages))
 
 

@@ -11,7 +11,9 @@
               {{ tag }}
           {% endfor %}
         </div>
+        {% if page.date_published %}
         <div class="item"><b>Date published</b>: {{ page.date_published }}</div>
+        {% endif %}
         {% if page.is_private %}
         <div class="item"><b>Private</b>: True</div>
         {% endif %}
