@@ -75,7 +75,7 @@ class DropboxPublicPage(db.Model):
     def _set_content(self, data, acct):
         """Set page content (raw)"""
         # decrypt vim encrypted file
-        if 'VimCrypt~01!>' in data:
+        if data.startswith('VimCrypt~01!'):
             text = vim_decrypt(data, acct.encryption_key)
         else:
             text = data
