@@ -188,14 +188,14 @@ class MainHandler(DropwebRequestHandler):
         # Purpose: followers who does not care about my programming related
         # posts can simply follow the 'general' content
         sections = {}
-        general_posts = sections['General'] = []
-        tech_posts = sections['Technology & Programming'] = []
+        general_posts = sections['General'] = dict(pages=[], embed=EMBED_MY_BUZZ)
+        tech_posts = sections['Technology & Programming'] = dict(pages=[], embed=EMBED_MY_TWITTER)
         
         for page in pages:
             if 'tech' in page.tags:
-                tech_posts.append(page)
+                tech_posts['pages'].append(page)
             else:
-                general_posts.append(page)
+                general_posts['pages'].append(page)
         
         self.render_template('main.html', dict(sections=sections))
 
@@ -284,6 +284,49 @@ def main():
     ('/', MainHandler),
   ], debug=True)
   util.run_wsgi_app(application)
+
+
+# get this from http://www.buzzcounter.net/
+EMBED_MY_BUZZ = r'''
+<div id="buzzwidget"><script type="text/javascript"> if (typeof jQuery == 'undefined') { document.write('<script type="text/javascript" language="javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"><\/script>'); }</script>
+<script type="text/javascript" language="javascript" src="http://www.buzzcounter.net/widget/107514687808578919461?background=fcfcfc&buzzbackground=fcfcfc&text=333333&smalltext=c0c0c0&link=17375e"></script><script type="text/javascript">$.Widget.get();</script><div id="buzzwidget-footer"><a id="buzz-logo" href="http://buzz.google.com/">Google</a><a id="buzzcounter-logo" href="http://www.buzzcounter.net/">Google Buzz</a></div></div>
+<script type="text/javascript">$.Widget.set();</script>
+'''
+
+# get this from http://twitter.com/goodies/widget_profile
+EMBED_MY_TWITTER = r'''
+<script src="http://widgets.twimg.com/j/2/widget.js"></script>
+<script>
+new TWTR.Widget({
+  version: 2,
+  type: 'profile',
+  rpp: 4,
+  interval: 6000,
+  width: 'auto',
+  height: 300,
+  theme: {
+    shell: {
+      background: '#fcfcfc',
+      color: '#000000'
+    },
+    tweets: {
+      background: '#fcfcfc',
+      color: '#000000',
+      links: ''
+    }
+  },
+  features: {
+    scrollbar: false,
+    loop: false,
+    live: false,
+    hashtags: true,
+    timestamp: true,
+    avatars: false,
+    behavior: 'all'
+  }
+}).render().setUser('sridhr').start();
+</script>
+'''
 
 
 if __name__ == '__main__':

@@ -5,11 +5,11 @@
 {% block content %}
     <h1>Sridhar's diary</h1>
     
-    <div style="float: right;">
+    <!-- div style="float: right;">
       <img src="http://dl.dropbox.com/u/87045/permalinks/me.jpeg"
            alt=""
            title="Photo of Sridhar Ratnakumar" />
-    </div>
+    </div-->
     
     <p>This is the site where I publish a bunch of my writings (which
     anyone can access) among the private diary entries (which only I have access
@@ -17,16 +17,20 @@
     
     <table class="posts">
         <tr>
+            <th class="vheader"></th>
             {% for section in sections %}
             <th>{{ section }}</th>
             {% endfor %}
         </tr>
         
         <tr>
+            <th class="vheader">
+                E<br>N<br>T<br>R<br>I<br>E<br>S
+            </th>
             {% for sections in sections.items %}
-            <td>
+            <td class="main">
                 <ul>
-                {% for page in sections.1 %}
+                {% for page in sections.1.pages %}
                     <li><a href="/{{page.name}}">{{page.title}}</a>
                         {% if page.date_published %}
                         (<i>published on {{page.date_published}}</i>)
@@ -37,8 +41,23 @@
             </td>
             {% endfor %}
         </tr>
+            
+        <tr>
+            <th class="vheader">
+                M<br>I<br>C<br>R<br>O<br>|<br>U<br>P<br>D<br>A<br>T<br>E<br>S
+            </th>
+            {% for sections in sections.items %}
+            <td class="main">
+                {% if sections.1.embed %}
+                  {{ sections.1.embed }}
+                {% endif %}
+            </td>
+            
+            {% endfor %}
+        </tr>
     </table> 
     
+
     <p>
     For my general micro-updates, see my 
     <a href="http://www.google.com/profiles/107514687808578919461#buzz">Google
