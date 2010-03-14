@@ -182,8 +182,22 @@ class MainHandler(DropwebRequestHandler):
     def get(self):
         pages = [p for p in DropboxPublicPage.all() if not p.is_private()]
         # sort by title, as not all pages have published_date
-        pages.sort(key=lambda page: page.title) 
-        self.render_template('main.html', dict(pages=pages))
+        pages.sort(key=lambda page: page.title)
+        
+        # Split general and tech posts based on tag 'tech'.
+        # Purpose: followers who does not care about my programming related
+        # posts can simply follow the 'general' content
+        sections = {}
+        general_posts = sections['General'] = []
+        tech_posts = sections['Technology & Programming'] = []
+        
+        for page in pages:
+            if 'tech' in page.tags:
+                tech_posts.append(page)
+            else:
+                general_posts.append(page)
+        
+        self.render_template('main.html', dict(sections=sections))
 
 
 class PageHandler(DropwebRequestHandler):

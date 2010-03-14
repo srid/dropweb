@@ -15,15 +15,29 @@
     anyone can access) among the private diary entries (which only I have access
     to). Here's the list of articles that are publicly available:</p>
     
-    <ul>
-    {% for page in pages %}
-        <li><a href="/{{page.name}}">{{page.title}}</a>
-            {% if page.date_published %}
-            (<i>published on {{page.date_published}}</i>)
-            {% endif %}
-        </li>
-    {% endfor %}
-    </ul>
+    <table class="posts">
+        <tr>
+            {% for section in sections %}
+            <th>{{ section }}</th>
+            {% endfor %}
+        </tr>
+        
+        <tr>
+            {% for sections in sections.items %}
+            <td>
+                <ul>
+                {% for page in sections.1 %}
+                    <li><a href="/{{page.name}}">{{page.title}}</a>
+                        {% if page.date_published %}
+                        (<i>published on {{page.date_published}}</i>)
+                        {% endif %}
+                    </li>
+                {% endfor %}
+                </ul>
+            </td>
+            {% endfor %}
+        </tr>
+    </table> 
     
     <p>
     For my general micro-updates, see my 
